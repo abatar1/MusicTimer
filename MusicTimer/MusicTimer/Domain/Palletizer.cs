@@ -42,7 +42,8 @@ namespace MusicTimer.Domain
             while (true)
             {
                 var trackPos = generator.Next(tmpTracks.Count);
-                var track = tmpTracks[trackPos];                
+                var track = tmpTracks[trackPos];   
+                // TODO Сделать этот алгоритм хитрей. Возможно стоит обрезать длину последнего трека, но это плохое решение            
                 if (Duration + track.Duration > duration)
                 {
                     var currentDurationTracks = tmpTracks

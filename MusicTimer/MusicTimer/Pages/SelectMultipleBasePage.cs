@@ -74,13 +74,18 @@ namespace MusicTimer.Pages
                 (sender as ListView).SelectedItem = null;
             };
             Content = mainList;
-                      
+
+            ToolbarItems.Add(new ToolbarItem("Add", null, AddSelection, ToolbarItemOrder.Primary));
             ToolbarItems.Add(new ToolbarItem("All", null, SelectAll, ToolbarItemOrder.Primary));
             ToolbarItems.Add(new ToolbarItem("None", null, SelectNone, ToolbarItemOrder.Primary));
-            
         }
 
-        public void SelectAll()
+        private void AddSelection()
+        {
+            // TODO Как-то по нажатию должны добавлять Tag в базу и на экран, возможно нужно весь SelectMultipleBasePage переделывать
+        }
+
+        private void SelectAll()
         {
             foreach (var wi in WrappedItems)
             {
@@ -88,7 +93,7 @@ namespace MusicTimer.Pages
             }
         }
 
-        public void SelectNone()
+        private void SelectNone()
         {
             foreach (var wi in WrappedItems)
             {
