@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MusicTimer.Domain;
 using MusicTimer.Pages;
 using Xamarin.Forms;
 
@@ -11,7 +12,7 @@ namespace MusicTimer
     {
         public App()
         {
-            MainPage = new NavigationPage(new PlayerPage());
+            MainPage = new NavigationPage(new PlayerPage(new Palletizer()));
         }
 
         protected override void OnStart()

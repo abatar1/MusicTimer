@@ -7,51 +7,52 @@ namespace MusicTimer.Domain
 {
     public class Palletizer
     {
-        private readonly IReadOnlyList<Track> _tracks;
-        private readonly int _allowableErrorInSeconds;
+        public TimeSpan Duration { get; private set; }
+        public List<Tag> Tags { get; }
+        public IReadOnlyList<Track> Tracks { get; }
 
-        public int DurationInSeconds { get; private set; }
-
-        public Palletizer(IEnumerable<Track> tracks, IEnumerable<Tag> tags = null, int allowableErrorInSeconds = 0)
+        public Palletizer(IEnumerable<Track> tracks = null, IEnumerable<Tag> tags = null, int allowableErrorInSeconds = 0)
         {
-            if (tags == null)
-                _tracks = new List<Track>(tracks);
+            if (tracks == null && tags == null)
+            {
+                Tracks = new List<Track>();
+                Tags = new List<Tag>();
+            }
+            else if (tags == null)
+            {
+                Tracks = new List<Track>(tracks);
+                Tags = new List<Tag>();
+            }              
             else
             {
                 var tmpTracks = tracks
                     .Where(track => track.Tags.Intersect(tags).Count() != 0);
-                _tracks = new List<Track>(tmpTracks);
-            }
-            _allowableErrorInSeconds = allowableErrorInSeconds;
-            DurationInSeconds = 0;
+                Tracks = new List<Track>(tmpTracks);
+                Tags = new List<Tag>(tags);
+            }          
+            Duration = new TimeSpan(0, 0, 0, 0);
         }
 
-        public Stack<Track> LayIn(int duration)
+        public Stack<Track> LayIn(TimeSpan duration)
         {
             var result = new Stack<Track>();
-            var tmpTracks = new List<Track>(_tracks);
+            var tmpTracks = new List<Track>(Tracks);
             var generator = new Random();
-            var errorFlag = false;
 
             while (true)
             {
                 var trackPos = generator.Next(tmpTracks.Count);
                 var track = tmpTracks[trackPos];                
-                if (DurationInSeconds + track.DurationInSeconds > duration)
+                if (Duration + track.Duration > duration)
                 {
                     var currentDurationTracks = tmpTracks
-                        .Where(t => t.DurationInSeconds <= duration - DurationInSeconds)
+                        .Where(t => t.Duration <= duration - Duration)
                         .ToList();
-                    if (currentDurationTracks.Count == 0)
-                    {
-                        if (errorFlag) break;
-                        duration += _allowableErrorInSeconds;
-                        errorFlag = true;
-                    }
+                    if (currentDurationTracks.Count == 0) break;
                     tmpTracks = new List<Track>(currentDurationTracks);
                     continue;
                 }
-                DurationInSeconds += track.DurationInSeconds;
+                Duration += track.Duration;
                 result.Push(track);
                 tmpTracks.RemoveAt(trackPos);
             }

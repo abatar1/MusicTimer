@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection.Emit;
 using System.Text;
-
+using MusicTimer.Domain;
 using Xamarin.Forms;
 
 namespace MusicTimer.Pages
@@ -15,14 +15,31 @@ namespace MusicTimer.Pages
         private static readonly int _mih = 60;
         private static readonly int _pageSpacing = 10;
 
+        private Palletizer palletizer;
+        private SelectMultipleBasePage<Tag> multiPage;
+
         private static CustomPicker InitRangePicker(string title, int start, int count)
         {
             var picker = new CustomPicker
-            {                   
+            {
                 VerticalOptions = LayoutOptions.Center,
                 HorizontalOptions = LayoutOptions.Center,
             };
             foreach (var min in Enumerable.Range(start, count).Select(m => m.ToString()))
+            {
+                picker.Items.Add(min);
+            }
+            return picker;
+        }
+
+        private static CustomPicker InitTagsChecker(IEnumerable<Tag> tags)
+        {
+            var picker = new CustomPicker
+            {
+                VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.Center,
+            };
+            foreach (var min in tags.Select(t => t.Name))
             {
                 picker.Items.Add(min);
             }
@@ -39,14 +56,35 @@ namespace MusicTimer.Pages
             };
         }
 
-        public PlayerPage()
-        {        
+        private async void OnTagButtonClick(object sender, EventArgs e)
+        {
+            if (multiPage == null) multiPage = new SelectMultipleBasePage<Tag>(this.palletizer.Tags) { Title = "Tags" };
+            await Navigation.PushAsync(multiPage);
+        }
+
+        public PlayerPage(Palletizer palletizer)
+        {
+            this.palletizer = palletizer;
+
             var headerLabel = InitPlayerPageLabel("Music.Timer");
             var mLabel = InitPlayerPageLabel("Minutes");
             var hLabel = InitPlayerPageLabel("Hours");
 
             var mPicker = InitRangePicker("Minutes", 1, _mih);
-            var hPicker = InitRangePicker("Hours", 1, _hid);
+            var hPicker = InitRangePicker("Hours", 1, _hid);           
+
+            var tagButton = new Button
+            {
+                Text = "Select tags",
+                HorizontalOptions = LayoutOptions.Center
+            };
+            tagButton.Clicked += OnTagButtonClick;
+
+            var processButton = new Button
+            {
+                Text = "Start",
+                HorizontalOptions = LayoutOptions.Center
+            };
 
             Content = new StackLayout
             {               
@@ -55,8 +93,8 @@ namespace MusicTimer.Pages
                     headerLabel,
                     new BoxView
                     {
-                        WidthRequest = 20,
-                        Color = Color.Transparent
+                        Color = Color.Black,
+                        HeightRequest = 1
                     },
                     new StackLayout
                     {
@@ -90,9 +128,14 @@ namespace MusicTimer.Pages
                          },
                          Orientation = StackOrientation.Horizontal,
                          HorizontalOptions = LayoutOptions.CenterAndExpand,  
-                         BackgroundColor = Color.FromHex("#f44")
                     },
-                       
+                    new BoxView
+                    {
+                        Color = Color.Black,
+                        HeightRequest = 1
+                    },
+                    tagButton,
+                    processButton
                 },
                 Spacing = _pageSpacing
             };
