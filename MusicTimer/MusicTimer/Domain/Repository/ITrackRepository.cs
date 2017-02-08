@@ -6,12 +6,12 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MusicTimer.Domain;
 
-namespace MusicTimer.Infrastructure
+namespace MusicTimer.Domain
 {
-    public interface IMatchRepository
+    public interface ITrackRepository
     {
-        List<Track> GetMatches();
-        Match FindMatchById(string id);
-        void SaveOrUpdate(Match match);
+        List<Track> GetTracks();
+        Track FindTrackById(string id);
+        void SaveOrUpdate(Track track);
     }
 }

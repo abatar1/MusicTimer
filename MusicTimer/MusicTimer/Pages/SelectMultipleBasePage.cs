@@ -56,14 +56,14 @@ namespace MusicTimer.Pages
             }
         }
 
-        public List<WrappedSelection<T>> WrappedItems;
+        private readonly List<WrappedSelection<T>> _wrappedItems;
 
         public SelectMultipleBasePage(IEnumerable<T> items)
         {
-            WrappedItems = items.Select(item => new WrappedSelection<T> { Item = item, IsSelected = false }).ToList();
+            _wrappedItems = items.Select(item => new WrappedSelection<T> { Item = item, IsSelected = false }).ToList();
             var mainList = new ListView
             {
-                ItemsSource = WrappedItems,
+                ItemsSource = _wrappedItems,
                 ItemTemplate = new DataTemplate(typeof(WrappedItemSelectionTemplate)),
             };
 
@@ -82,12 +82,12 @@ namespace MusicTimer.Pages
 
         private void AddSelection()
         {
-            // TODO Как-то по нажатию должны добавлять Tag в базу и на экран, возможно нужно весь SelectMultipleBasePage переделывать
+            // TODO Как-то по нажатию должны добавлять Tag в базу и на экран
         }
 
         private void SelectAll()
         {
-            foreach (var wi in WrappedItems)
+            foreach (var wi in _wrappedItems)
             {
                 wi.IsSelected = true;
             }
@@ -95,7 +95,7 @@ namespace MusicTimer.Pages
 
         private void SelectNone()
         {
-            foreach (var wi in WrappedItems)
+            foreach (var wi in _wrappedItems)
             {
                 wi.IsSelected = false;
             }
@@ -103,7 +103,7 @@ namespace MusicTimer.Pages
 
         public List<T> GetSelection()
         {
-            return WrappedItems.Where(item => item.IsSelected).Select(wrappedItem => wrappedItem.Item).ToList();
+            return _wrappedItems.Where(item => item.IsSelected).Select(wrappedItem => wrappedItem.Item).ToList();
         }
     }
 }

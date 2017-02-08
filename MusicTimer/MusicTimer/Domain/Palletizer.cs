@@ -10,7 +10,7 @@ namespace MusicTimer.Domain
         public List<Tag> Tags { get; }
         public IReadOnlyList<Track> Tracks { get; }
 
-        public Palletizer(IEnumerable<Track> tracks = null, IEnumerable<Tag> tags = null, int allowableErrorInSeconds = 0)
+        public Palletizer(IEnumerable<Track> tracks = null, IEnumerable<Tag> tags = null)
         {
             if (tracks == null && tags == null)
             {
@@ -29,10 +29,10 @@ namespace MusicTimer.Domain
                 Tracks = new List<Track>(tmpTracks);
                 Tags = new List<Tag>(tags);
             }          
-            Duration = new TimeSpan(0, 0, 0, 0);
+            Duration = new TimeSpan(0, 0, 0);
         }
 
-        public Stack<Track> LayIn(TimeSpan duration)
+        public Stack<Track> LayIn(TimeSpan fullDuration)
         {
             var result = new Stack<Track>();
             var tmpTracks = new List<Track>(Tracks);
@@ -43,16 +43,16 @@ namespace MusicTimer.Domain
                 var trackPos = generator.Next(tmpTracks.Count);
                 var track = tmpTracks[trackPos];   
                 // TODO Сделать этот алгоритм хитрей. Возможно стоит обрезать длину последнего трека, но это плохое решение            
-                if (Duration + track.Duration > duration)
+                if (Duration.TotalSeconds + track.Duration > fullDuration.TotalSeconds)
                 {
                     var currentDurationTracks = tmpTracks
-                        .Where(t => t.Duration <= duration - Duration)
+                        .Where(t => t.Duration <= fullDuration.TotalSeconds - Duration.TotalSeconds)
                         .ToList();
                     if (currentDurationTracks.Count == 0) break;
                     tmpTracks = new List<Track>(currentDurationTracks);
                     continue;
                 }
-                Duration += track.Duration;
+                Duration += new TimeSpan(0, 0, track.Duration);
                 result.Push(track);
                 tmpTracks.RemoveAt(trackPos);
             }

@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SQLite;
 
 namespace MusicTimer.Domain
 {
-    public interface IData
+    public interface IFileHelper
     {
-        int Id { get; set; }
+        string GetLocalFilePath(string filename);
     }
 }

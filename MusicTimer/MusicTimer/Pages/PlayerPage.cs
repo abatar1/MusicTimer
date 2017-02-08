@@ -32,20 +32,6 @@ namespace MusicTimer.Pages
             return picker;
         }
 
-        private static CustomPicker InitTagsChecker(IEnumerable<Tag> tags)
-        {
-            var picker = new CustomPicker
-            {
-                VerticalOptions = LayoutOptions.Center,
-                HorizontalOptions = LayoutOptions.Center,
-            };
-            foreach (var min in tags.Select(t => t.Name))
-            {
-                picker.Items.Add(min);
-            }
-            return picker;
-        }
-
         private static Label InitPlayerPageLabel(string text)
         {
             return new Label
