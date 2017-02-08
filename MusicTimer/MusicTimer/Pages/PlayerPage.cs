@@ -15,8 +15,8 @@ namespace MusicTimer.Pages
         private static readonly int _mih = 60;
         private static readonly int _pageSpacing = 10;
 
-        private Palletizer _palletizer;
-        private SelectMultipleBasePage<Tag> multiPage;
+        private readonly Palletizer _palletizer;
+        private SelectMultipleBasePage<Tag> _multiPage;
 
         private static CustomPicker InitRangePicker(string title, int start, int count)
         {
@@ -58,13 +58,13 @@ namespace MusicTimer.Pages
 
         private async void OnTagButtonClick(object sender, EventArgs e)
         {
-            if (multiPage == null) multiPage = new SelectMultipleBasePage<Tag>(this._palletizer.Tags) { Title = "Tags" };
-            await Navigation.PushAsync(multiPage);
+            if (_multiPage == null) _multiPage = new SelectMultipleBasePage<Tag>(this._palletizer.Tags) { Title = "Tags" };
+            await Navigation.PushAsync(_multiPage);
         }
 
         public PlayerPage(Palletizer palletizer)
         {
-            this._palletizer = palletizer;
+            _palletizer = palletizer;
 
             var headerLabel = InitPlayerPageLabel("Music.Timer");
             var mLabel = InitPlayerPageLabel("Minutes");

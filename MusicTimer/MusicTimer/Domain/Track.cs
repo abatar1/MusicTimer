@@ -1,24 +1,36 @@
 using System;
 using System.Collections.Generic;
+using SQLite;
 
-// ReSharper disable once CheckNamespace
 namespace MusicTimer.Domain
 {
-    public class Track
+    public class Track : IData
     {
-        public TimeSpan Duration { get; }
-        public string Name { get; }
-        public string FullName { get; }
-        public IReadOnlyCollection<Tag> Tags { get; }
-        public string Id { get; }
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; }
 
-        public Track(TimeSpan duration, string name, string fullName, IEnumerable<Tag> tags, string id)
+        [Ignore]
+        public TimeSpan Duration { get; }
+
+        public string Name { get; }
+
+        public string FullName { get; }
+
+        [Ignore]
+        public IReadOnlyCollection<Tag> Tags { get; }      
+
+        public Track(TimeSpan duration, string name, string fullName, IEnumerable<Tag> tags, int id)
         {
             Duration = duration;
             Name = name;
             FullName = fullName;
             Tags = new List<Tag>(tags);
             Id = id;
+        }
+
+        public Track()
+        {
+            
         }
     }
 }
