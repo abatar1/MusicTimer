@@ -8,9 +8,13 @@ namespace MusicTimer.Domain.Database
 {
     public class TrackDatabase : Database<Track>
     {
+        private const string ttDatabaseName = "tagintrack.db";
+        private const string tagDatabaseName = "tags.db";
+        private const string trackDatabaseName = "tracks.db";
+
         private class TagInTrackDatabase : Database<TagsInTrack>
         {
-            public TagInTrackDatabase() : base("tagintrack.db")
+            public TagInTrackDatabase() : base(ttDatabaseName)
             {
             }
 
@@ -18,11 +22,27 @@ namespace MusicTimer.Domain.Database
             {
                 return Connection.Table<TagsInTrack>().Where(i => i.TrackId == id).ToListAsync();
             }
+
+            public void RemoveTagsById(int id)
+            {
+                foreach (var item in Connection.Table<TagsInTrack>().Where(i => i.TrackId == id).ToListAsync().Result)
+                {
+                    Connection.DeleteAsync(item);
+                }
+            }
+
+            public void RemoveTag(Tag tag)
+            {
+                foreach (var item in Connection.Table<TagsInTrack>().Where(i => i.TagName == tag.Name).ToListAsync().Result)
+                {
+                    Connection.DeleteAsync(item);
+                }
+            }
         }
        
         private class TagDatabase : Database<Tag>
         {
-            public TagDatabase() : base("tag.db")
+            public TagDatabase() : base(tagDatabaseName)
             {
             }
 
@@ -35,7 +55,7 @@ namespace MusicTimer.Domain.Database
         private readonly TagInTrackDatabase _tagInTrackDatabase;
         private readonly TagDatabase _tagDatabase;
 
-        public TrackDatabase() : base("tracks.db")
+        public TrackDatabase() : base(trackDatabaseName)
         {
             _tagInTrackDatabase = new TagInTrackDatabase();
             _tagDatabase = new TagDatabase();
@@ -57,38 +77,24 @@ namespace MusicTimer.Domain.Database
                 .ToList());
         }
 
-        public void AddTrackTagsAsync(int trackId, params Tag[] addingTags)
+        public void RemoveTagAsync(Tag tag, int? trackId = null)
         {
-            foreach (var tag in addingTags)
-            {
-                _tagDatabase.InsertUpdateData(tag);
-                _tagInTrackDatabase.InsertUpdateData(new TagsInTrack(trackId, tag.Name));
-            }                                    
-        }
-
-        public void AddTagsAsync(params Tag[] addingTags)
-        {
-            foreach (var tag in addingTags)
-            {
-                _tagDatabase.InsertUpdateData(tag);
-            }
-        }
-
-        public void DeleteTrackTagsAsync(int trackId, params Tag[] deletingTags)
-        {
-            foreach (var tag in deletingTags)
+            if (trackId != null)
             {
                 _tagDatabase.DeleteItemAsync(tag);
                 _tagInTrackDatabase.DeleteItemAsync(new TagsInTrack(trackId, tag.Name));
             }
-        }
-
-        public void DeleteTagsAsync(params Tag[] deletingTags)
-        {
-            foreach (var tag in deletingTags)
+            else
             {
                 _tagDatabase.DeleteItemAsync(tag);
-            }
+                _tagInTrackDatabase.RemoveTag(tag);
+            }               
         }
+
+        public void AddTagAsync(Tag tag, int? trackId = null)
+        {
+            _tagDatabase.InsertUpdateData(tag);
+            if (trackId != null) _tagInTrackDatabase.InsertUpdateData(new TagsInTrack(trackId, tag.Name));                                              
+        }      
     }
 }

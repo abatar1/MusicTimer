@@ -125,6 +125,13 @@ namespace MusicTimer.Pages
                 },
                 Spacing = _pageSpacing
             };
+
+            ToolbarItems.Add(new ToolbarItem("Settings", null, OnSettingsButtonClick, ToolbarItemOrder.Primary));
+        }
+
+        private void OnSettingsButtonClick()
+        {
+            
         }
     }
 }

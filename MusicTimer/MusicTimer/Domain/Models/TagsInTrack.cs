@@ -10,12 +10,12 @@ namespace MusicTimer.Domain
     public class TagsInTrack
     {
         [PrimaryKey]
-        public int TrackId { get; set; }
+        public int? TrackId { get; set; }
         public string TagName { get; set; }    
 
         public TagsInTrack() { }
 
-        public TagsInTrack(int ti, string tn)
+        public TagsInTrack(int? ti, string tn)
         {
             TagName = tn;
             TrackId = ti;
