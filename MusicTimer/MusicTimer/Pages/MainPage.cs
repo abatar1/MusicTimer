@@ -9,7 +9,7 @@ using Xamarin.Forms;
 
 namespace MusicTimer.Pages
 {
-    public class PlayerPage : ContentPage
+    public class MainPage : ContentPage
     {
         private static readonly int _hid = 24;
         private static readonly int _mih = 60;
@@ -48,7 +48,7 @@ namespace MusicTimer.Pages
             await Navigation.PushAsync(_multiPage);
         }
 
-        public PlayerPage(Palletizer palletizer)
+        public MainPage(Palletizer palletizer)
         {
             _palletizer = palletizer;
 

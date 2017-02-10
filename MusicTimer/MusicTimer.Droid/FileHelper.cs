@@ -1,5 +1,6 @@
+using System.Collections.Generic;
 using System.IO;
-using Android.Content.Res;
+using System.Linq;
 using MusicTimer.Domain;
 using MusicTimer.Droid;
 using Xamarin.Forms;
@@ -12,32 +13,34 @@ namespace MusicTimer.Droid
     {
         public string GetLocalFilePath(string filename)
         {
-            var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            var path = Path.Combine(documentsPath, filename);
-
-            if (!File.Exists(path))
-            {               
-                var id = Resources.System.GetIdentifier(filename, "raw", "MusicTimer.Droid");
-                var s = Forms.Context.Resources.OpenRawResource(id);
-                var writeStream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
-                ReadWriteStream(s, writeStream);
-            }
-
-            return path;
+            var docsPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            return Path.Combine(docsPath, filename);
         }
 
-        private void ReadWriteStream(Stream readStream, Stream writeStream)
+        public List<string> GetFilesByFormat(List<string> directories, List<string> formats)
         {
-            const int length = 256;
-            var buffer = new byte[length];
-            var bytesRead = readStream.Read(buffer, 0, length);
-            while (bytesRead > 0)
+            var result = new List<string>();
+            foreach (var path in directories)
             {
-                writeStream.Write(buffer, 0, bytesRead);
-                bytesRead = readStream.Read(buffer, 0, length);
+                var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
+                result.AddRange(files.Where(file => formats.Any(file.Contains)));
             }
-            readStream.Close();
-            writeStream.Close();
+            return result;
+        }
+
+        public void SaveFile(string path, string content = null)
+        {
+            File.WriteAllText(path, content);
+        }
+
+        public string LoadFile(string path)
+        {
+            return File.ReadAllText(path);
+        }
+
+        public bool FileExists(string filename)
+        {
+            return File.Exists(GetLocalFilePath(filename));
         }
     }
 }

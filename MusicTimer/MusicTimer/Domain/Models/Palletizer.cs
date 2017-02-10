@@ -8,7 +8,7 @@ namespace MusicTimer.Domain
     {
         public TimeSpan Duration { get; private set; }
         public List<Tag> Tags { get; }
-        public IReadOnlyList<Track> Tracks { get; }
+        public List<Track> Tracks { get; }
 
         public Palletizer(IEnumerable<Track> tracks = null, IEnumerable<Tag> tags = null)
         {
@@ -43,16 +43,16 @@ namespace MusicTimer.Domain
                 var trackPos = generator.Next(tmpTracks.Count);
                 var track = tmpTracks[trackPos];   
                 // TODO Сделать этот алгоритм хитрей. Возможно стоит обрезать длину последнего трека, но это плохое решение            
-                if (Duration.TotalSeconds + track.Duration > fullDuration.TotalSeconds)
+                if (Duration + track.Duration > fullDuration)
                 {
                     var currentDurationTracks = tmpTracks
-                        .Where(t => t.Duration <= fullDuration.TotalSeconds - Duration.TotalSeconds)
+                        .Where(t => t.Duration <= fullDuration - Duration)
                         .ToList();
                     if (currentDurationTracks.Count == 0) break;
                     tmpTracks = new List<Track>(currentDurationTracks);
                     continue;
                 }
-                Duration += new TimeSpan(0, 0, track.Duration);
+                Duration += track.Duration;
                 result.Push(track);
                 tmpTracks.RemoveAt(trackPos);
             }

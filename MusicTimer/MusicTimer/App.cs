@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MusicTimer.Domain;
-using MusicTimer.Domain.Database;
 using MusicTimer.Pages;
 using Xamarin.Forms;
 
@@ -17,8 +16,7 @@ namespace MusicTimer
             // TODO Синхронизировать данные 
             // TODO При запуске проверять на наличие новых треков и обновлять базу данных
             // TODO Ну и саму базу данных неплохо бы завести
-            var database = new TrackDatabase();
-            MainPage = new NavigationPage(new PlayerPage(new Palletizer()));
+            MainPage = new NavigationPage(new MainPage(new Palletizer()));
         }
 
         protected override void OnStart()

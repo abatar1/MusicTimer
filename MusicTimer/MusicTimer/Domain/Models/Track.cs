@@ -1,22 +1,24 @@
 using System;
 using System.Collections.Generic;
-using SQLite;
 
 namespace MusicTimer.Domain
 {
     public class Track
     {
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
+        public string Id { get; private set; }
 
-        public int Duration { get; set; }
+        public string Name { get; private set; }
 
-        public string Name { get; set; }
+        public TimeSpan Duration { get; private set; }       
 
-        public string FullName { get; set; }
+        public HashSet<Tag> Tags { get; private set; }
 
-        //TODO ¬от тут больша€ проблема, в классе Palletizer по€снение
-        [Ignore]
-        public List<Tag> Tags { get; set; }
+        public Track(string name, TimeSpan duration, HashSet<Tag> tags)
+        {
+            Id = Guid.NewGuid().ToString();
+            Duration = duration;
+            Name = name;
+            Tags = tags;
+        }
     }
 }
