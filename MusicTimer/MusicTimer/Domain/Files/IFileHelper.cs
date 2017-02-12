@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MusicTimer.Domain
+namespace MusicTimer.Domain.Files
 {
     public interface IFileHelper
     {
@@ -13,5 +13,6 @@ namespace MusicTimer.Domain
         bool FileExists(string filename);
         void SaveFile(string path, string content = null);
         string LoadFile(string path);
+        int CountFiles(string path, List<string> formats);
     }
 }

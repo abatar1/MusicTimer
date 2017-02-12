@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MusicTimer.Domain;
+using MusicTimer.Domain.Files;
 using MusicTimer.Droid;
 using Xamarin.Forms;
 using Environment = System.Environment;
@@ -26,6 +26,13 @@ namespace MusicTimer.Droid
                 result.AddRange(files.Where(file => formats.Any(file.Contains)));
             }
             return result;
+        }
+
+        public int CountFiles(string path, List<string> formats)
+        {
+            return Directory
+                .GetFiles(path, "*", SearchOption.AllDirectories)
+                .Count(file => formats.Any(file.Contains));
         }
 
         public void SaveFile(string path, string content = null)

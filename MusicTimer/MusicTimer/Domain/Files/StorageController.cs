@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using MusicTimer.Domain.Models;
 using Newtonsoft.Json;
 using Xamarin.Forms;
 
-namespace MusicTimer.Domain.Repository
+namespace MusicTimer.Domain.Files
 {
-    public class TrackStorageController
+    public class StorageController
     {
         private List<Track> _tracks;
         private const string TracksFilename = "tracks";
@@ -12,16 +13,31 @@ namespace MusicTimer.Domain.Repository
         private HashSet<Tag> _tags;
         private const string TagsFilename = "tags";
 
-        private List<string> _repositoriesList;
+        private List<Repository> _repositories;
+        private const string RepositoriesFilename = "tags";
+
         private List<string> _formatsList;
 
-        public TrackStorageController(List<string> repositoriesList, List<string> formatsList)
+        public StorageController(List<string> formatsList)
         {
-            _repositoriesList = repositoriesList;
             _formatsList = formatsList;
         }
 
+        private bool IsNewFileAdded(Repository rep)
+        {
+            return rep.FileCount == DependencyService.Get<IFileHelper>().CountFiles(rep.Path, _formatsList);
+        }
 
+        private void CheckOnChange()
+        {
+            foreach (var repository in _repositories)
+            {
+                if (!IsNewFileAdded(repository))
+                {
+                    
+                }
+            }
+        }
 
         private static List<T> DeserializeFrom<T>(string name)
         {
@@ -41,12 +57,14 @@ namespace MusicTimer.Domain.Repository
         {
             _tracks = DeserializeFrom<Track>(TracksFilename);
             _tags = new HashSet<Tag>(DeserializeFrom<Tag>(TagsFilename));
+            _repositories = DeserializeFrom<Repository>(RepositoriesFilename);
         }
 
         public void OnExit()
         {
             SerializeIn(TagsFilename, _tags);
             SerializeIn(TracksFilename, _tracks);
+            SerializeIn(RepositoriesFilename, _repositories);
         }
 
         public void AddTag(Tag tag)
