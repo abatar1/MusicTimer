@@ -28,7 +28,7 @@ namespace MusicTimer.Droid
             return result;
         }
 
-        public int CountFiles(string path, List<string> formats)
+        public int CountFiles(string path, IEnumerable<string> formats)
         {
             return Directory
                 .GetFiles(path, "*", SearchOption.AllDirectories)
@@ -49,5 +49,10 @@ namespace MusicTimer.Droid
         {
             return File.Exists(GetLocalFilePath(filename));
         }
+
+        public string DefaultMusicFolder()
+        {
+            return Environment.SpecialFolder.MyMusic.ToString();
+        }       
     }
 }

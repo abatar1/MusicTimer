@@ -14,18 +14,17 @@ namespace MusicTimer.Domain.Files
         private const string TagsFilename = "tags";
 
         private List<Repository> _repositories;
-        private const string RepositoriesFilename = "tags";
+        private const string RepositoriesFilename = "repo";
 
-        private List<string> _formatsList;
+        private readonly IReadOnlyList<string> _formats;
 
-        public StorageController(List<string> formatsList)
+        public StorageController()
         {
-            _formatsList = formatsList;
         }
 
         private bool IsNewFileAdded(Repository rep)
         {
-            return rep.FileCount == DependencyService.Get<IFileHelper>().CountFiles(rep.Path, _formatsList);
+            return rep.FileCount == DependencyService.Get<IFileHelper>().CountFiles(rep.Path, _formats);
         }
 
         private void CheckOnChange()
@@ -65,6 +64,11 @@ namespace MusicTimer.Domain.Files
             SerializeIn(TagsFilename, _tags);
             SerializeIn(TracksFilename, _tracks);
             SerializeIn(RepositoriesFilename, _repositories);
+        }
+
+        public void AddRepositories(IEnumerable<string> repositories)
+        {
+            SerializeIn(RepositoriesFilename, repositories);
         }
 
         public void AddTag(Tag tag)

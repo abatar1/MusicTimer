@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace MusicTimer.Domain.Files
 {
@@ -13,6 +9,7 @@ namespace MusicTimer.Domain.Files
         bool FileExists(string filename);
         void SaveFile(string path, string content = null);
         string LoadFile(string path);
-        int CountFiles(string path, List<string> formats);
+        int CountFiles(string path, IEnumerable<string> formats);
+        string DefaultMusicFolder();
     }
 }

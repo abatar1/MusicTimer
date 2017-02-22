@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Reflection.Emit;
-using System.Text;
 using MusicTimer.Domain;
+using MusicTimer.Domain.Files;
+using MusicTimer.Infrastructure;
 using Xamarin.Forms;
 
 namespace MusicTimer.Pages
@@ -15,7 +13,7 @@ namespace MusicTimer.Pages
         private static readonly int _mih = 60;
         private static readonly int _pageSpacing = 10;
 
-        private readonly Palletizer _palletizer;
+        private Palletizer _palletizer;
         private SelectMultipleBasePage<Tag> _multiPage;
 
         private static CustomPicker InitRangePicker(string title, int start, int count)
@@ -42,41 +40,52 @@ namespace MusicTimer.Pages
             };
         }
 
-        private async void OnTagButtonClick(object sender, EventArgs e)
+        private async void OnProcessButtonClick(object sender, EventArgs eventArgs)
         {
-            if (_multiPage == null) _multiPage = new SelectMultipleBasePage<Tag>(this._palletizer.Tags) { Title = "Tags" };
-            await Navigation.PushAsync(_multiPage);
+
         }
 
-        public MainPage(Palletizer palletizer)
+        private async void OnSettingsButtonClick()
         {
-            _palletizer = palletizer;
 
-            var headerLabel = InitPlayerPageLabel("Music.Timer");
+        }
+
+        public MainPage()
+        {
+            _palletizer = new Palletizer();          
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
             var mLabel = InitPlayerPageLabel("Minutes");
             var hLabel = InitPlayerPageLabel("Hours");
 
             var mPicker = InitRangePicker("Minutes", 1, _mih);
-            var hPicker = InitRangePicker("Hours", 1, _hid);           
+            var hPicker = InitRangePicker("Hours", 1, _hid);
 
             var tagButton = new Button
             {
                 Text = "Select tags",
                 HorizontalOptions = LayoutOptions.Center
             };
-            tagButton.Clicked += OnTagButtonClick;
+            tagButton.Clicked += async (sender, e) =>
+            {
+                if (_multiPage == null) _multiPage = new SelectMultipleBasePage<Tag>(_palletizer.Tags) { Title = "Tags" };
+                await Navigation.PushAsync(_multiPage);
+            };
 
             var processButton = new Button
             {
                 Text = "Start",
                 HorizontalOptions = LayoutOptions.Center
             };
+            processButton.Clicked += OnProcessButtonClick;
 
             Content = new StackLayout
-            {               
+            {
                 Children =
                 {
-                    headerLabel,
                     new BoxView
                     {
                         Color = Color.Black,
@@ -92,14 +101,14 @@ namespace MusicTimer.Pages
                                 {
                                     hLabel,
                                     hPicker
-                                },                      
+                                },
                                 Orientation = StackOrientation.Vertical,
                                 VerticalOptions = LayoutOptions.Center
                             },
                             new BoxView
                             {
                                 WidthRequest = 20,
-                                Color = Color.Transparent                        
+                                Color = Color.Transparent
                             },
                             new StackLayout
                             {
@@ -110,10 +119,10 @@ namespace MusicTimer.Pages
                                 },
                                 Orientation = StackOrientation.Vertical,
                                 VerticalOptions = LayoutOptions.Center
-                            }                     
+                            }
                          },
                          Orientation = StackOrientation.Horizontal,
-                         HorizontalOptions = LayoutOptions.CenterAndExpand,  
+                         HorizontalOptions = LayoutOptions.CenterAndExpand,
                     },
                     new BoxView
                     {
@@ -127,11 +136,6 @@ namespace MusicTimer.Pages
             };
 
             ToolbarItems.Add(new ToolbarItem("Settings", null, OnSettingsButtonClick, ToolbarItemOrder.Primary));
-        }
-
-        private void OnSettingsButtonClick()
-        {
-            
         }
     }
 }

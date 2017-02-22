@@ -1,6 +1,5 @@
 using Plugin.Settings;
 using Plugin.Settings.Abstractions;
-
 namespace MusicTimer.Settings
 {
     public static class Settings
@@ -9,20 +8,20 @@ namespace MusicTimer.Settings
 
         #region Setting Constants
 
-        private const string SPathKey = "spath_key";
-        private static readonly string SPathDefault = string.Empty;
+        private const string FirstStartKey = "spath_key";
+        private static readonly bool FirstStartDefault = true;
 
         #endregion
 
-        public static string GeneralSettings
+        public static bool IsFirstStart
         {
             get
             {
-                return AppSettings.GetValueOrDefault(SPathKey, SPathDefault);
+                return AppSettings.GetValueOrDefault(FirstStartKey, FirstStartDefault);
             }
             set
             {
-                AppSettings.AddOrUpdateValue(SPathKey, value);
+                AppSettings.AddOrUpdateValue(FirstStartKey, value);
             }
         }
     }
