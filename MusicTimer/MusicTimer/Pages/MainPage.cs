@@ -9,13 +9,14 @@ namespace MusicTimer.Pages
 {
     public class MainPage : ContentPage
     {
-        private static readonly int _hid = 24;
-        private static readonly int _mih = 60;
-        private static readonly int _pageSpacing = 10;
+        private const int Hid = 24;
+        private const int Mih = 60;
 
         private Palletizer _palletizer;
-        private SelectMultipleBasePage<Tag> _multiPage;
-
+        private StorageController _storageController;
+        private SelectMultipleBasePage _multiPage;
+        private SettingsPage _settingsPage;
+              
         private static CustomPicker InitRangePicker(string title, int start, int count)
         {
             var picker = new CustomPicker
@@ -45,52 +46,52 @@ namespace MusicTimer.Pages
 
         }
 
-        private async void OnSettingsButtonClick()
+        public MainPage(StorageController storageController)
         {
+            _storageController = storageController;
+            _palletizer = new Palletizer();
 
-        }
-
-        public MainPage()
-        {
-            _palletizer = new Palletizer();          
-        }
-
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
             var mLabel = InitPlayerPageLabel("Minutes");
             var hLabel = InitPlayerPageLabel("Hours");
 
-            var mPicker = InitRangePicker("Minutes", 1, _mih);
-            var hPicker = InitRangePicker("Hours", 1, _hid);
+            var mPicker = InitRangePicker("Minutes", 1, Mih);
+            var hPicker = InitRangePicker("Hours", 1, Hid);
 
             var tagButton = new Button
             {
                 Text = "Select tags",
-                HorizontalOptions = LayoutOptions.Center
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.Center
             };
             tagButton.Clicked += async (sender, e) =>
             {
-                if (_multiPage == null) _multiPage = new SelectMultipleBasePage<Tag>(_palletizer.Tags) { Title = "Tags" };
+                if (_multiPage == null)
+                {
+                    _multiPage = new SelectMultipleBasePage(_palletizer.Tags) { Title = "Tags" };
+                }
                 await Navigation.PushAsync(_multiPage);
             };
 
             var processButton = new Button
             {
                 Text = "Start",
-                HorizontalOptions = LayoutOptions.Center
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.End
             };
             processButton.Clicked += OnProcessButtonClick;
 
-            Content = new StackLayout
+            ToolbarItems.Add(new ToolbarItem("Settings", null,
+                async () =>
+                {
+                    if (_settingsPage == null) _settingsPage = new SettingsPage { Title = "Settings" };
+                    await Navigation.PushAsync(_settingsPage);
+                }, 
+                ToolbarItemOrder.Primary));
+
+            Content = new Grid
             {
                 Children =
                 {
-                    new BoxView
-                    {
-                        Color = Color.Black,
-                        HeightRequest = 1
-                    },
                     new StackLayout
                     {
                          Children =
@@ -105,11 +106,6 @@ namespace MusicTimer.Pages
                                 Orientation = StackOrientation.Vertical,
                                 VerticalOptions = LayoutOptions.Center
                             },
-                            new BoxView
-                            {
-                                WidthRequest = 20,
-                                Color = Color.Transparent
-                            },
                             new StackLayout
                             {
                                 Children =
@@ -122,20 +118,13 @@ namespace MusicTimer.Pages
                             }
                          },
                          Orientation = StackOrientation.Horizontal,
-                         HorizontalOptions = LayoutOptions.CenterAndExpand,
-                    },
-                    new BoxView
-                    {
-                        Color = Color.Black,
-                        HeightRequest = 1
+                         HorizontalOptions = LayoutOptions.Center,
+                         VerticalOptions = LayoutOptions.Start
                     },
                     tagButton,
                     processButton
                 },
-                Spacing = _pageSpacing
-            };
-
-            ToolbarItems.Add(new ToolbarItem("Settings", null, OnSettingsButtonClick, ToolbarItemOrder.Primary));
+            };            
         }
     }
 }

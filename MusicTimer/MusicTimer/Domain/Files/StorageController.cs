@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MusicTimer.Domain.Models;
 using Newtonsoft.Json;
 using Xamarin.Forms;
@@ -41,6 +42,8 @@ namespace MusicTimer.Domain.Files
         private static List<T> DeserializeFrom<T>(string name)
         {
             var path = DependencyService.Get<IFileHelper>().GetLocalFilePath(name);
+            if (!DependencyService.Get<IFileHelper>().FileExists(path))
+                DependencyService.Get<IFileHelper>().SaveFile(path);
             var content = DependencyService.Get<IFileHelper>().LoadFile(path);
             return JsonConvert.DeserializeObject<List<T>>(content);
         }
@@ -52,14 +55,17 @@ namespace MusicTimer.Domain.Files
             DependencyService.Get<IFileHelper>().SaveFile(path, content);
         }
 
-        public void OnLoad()
+        public void Load()
         {
             _tracks = DeserializeFrom<Track>(TracksFilename);
-            _tags = new HashSet<Tag>(DeserializeFrom<Tag>(TagsFilename));
+
+            var tags = DeserializeFrom<Tag>(TagsFilename) ?? new List<Tag>();
+            _tags = new HashSet<Tag>(tags);
+
             _repositories = DeserializeFrom<Repository>(RepositoriesFilename);
         }
 
-        public void OnExit()
+        public void Exit()
         {
             SerializeIn(TagsFilename, _tags);
             SerializeIn(TracksFilename, _tracks);

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Android.Support.V7.View.Menu;
 using MusicTimer.Domain.Files;
 using MusicTimer.Droid;
 using Xamarin.Forms;
@@ -15,6 +16,12 @@ namespace MusicTimer.Droid
         {
             var docsPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             return Path.Combine(docsPath, filename);
+        }
+
+        public List<string> GetDirectories(string path)
+        {
+            var a = Directory.GetDirectories(path, "*", SearchOption.TopDirectoryOnly);
+            return new List<string>(a);
         }
 
         public List<string> GetFilesByFormat(List<string> directories, List<string> formats)
@@ -53,6 +60,11 @@ namespace MusicTimer.Droid
         public string DefaultMusicFolder()
         {
             return Environment.SpecialFolder.MyMusic.ToString();
-        }       
+        }
+
+        public string PersonalFolder()
+        {
+            return Environment.SpecialFolder.Personal.ToString();
+        }
     }
 }

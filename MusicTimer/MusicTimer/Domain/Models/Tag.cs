@@ -1,6 +1,8 @@
+using System;
+
 namespace MusicTimer.Domain
 {
-    public class Tag
+    public class Tag : IEquatable<Tag>
     {
         public string Name { get; }
 
@@ -19,6 +21,16 @@ namespace MusicTimer.Domain
         public override int GetHashCode()
         {
             return Name?.GetHashCode() ?? 0;
+        }
+
+        public bool Equals(Tag other)
+        {
+            return Name == other.Name;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

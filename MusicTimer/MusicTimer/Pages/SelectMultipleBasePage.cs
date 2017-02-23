@@ -1,15 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using MusicTimer.Domain;
+using MusicTimer.Infrastructure;
 using Xamarin.Forms;
 
 namespace MusicTimer.Pages
 {
-    public class SelectMultipleBasePage<T> : ContentPage
+    public class SelectMultipleBasePage : ContentPage
     {
-        public class WrappedSelection<T1> : INotifyPropertyChanged
+        public event EventHandler<TagEventArgs> TagAddedEvent;
+
+        public class WrappedSelection : INotifyPropertyChanged
         {
-            public T1 Item { get; set; }
+            public Tag Item { get; set; }
             private bool _isSelected;
 
             public bool IsSelected
@@ -53,34 +58,77 @@ namespace MusicTimer.Pages
             }
         }
 
-        private readonly List<WrappedSelection<T>> _wrappedItems;
+        private HashSet<WrappedSelection> _wrappedItems;
 
-        public SelectMultipleBasePage(IEnumerable<T> items)
+        public SelectMultipleBasePage(IEnumerable<Tag> items)
         {
-            _wrappedItems = items.Select(item => new WrappedSelection<T> { Item = item, IsSelected = false }).ToList();
+            _wrappedItems = new HashSet<WrappedSelection>(items.Select(item => new WrappedSelection { Item = item, IsSelected = false }));
             var mainList = new ListView
             {
                 ItemsSource = _wrappedItems,
                 ItemTemplate = new DataTemplate(typeof(WrappedItemSelectionTemplate)),
             };
 
-            mainList.ItemSelected += (sender, e) => {
+            mainList.ItemSelected += (sender, e) => 
+            {
                 if (e.SelectedItem == null) return;
-                var o = (WrappedSelection<T>)e.SelectedItem;
+                var o = (WrappedSelection)e.SelectedItem;
                 o.IsSelected = !o.IsSelected;
                 (sender as ListView).SelectedItem = null;
             };
-            Content = mainList;
 
-            ToolbarItems.Add(new ToolbarItem("Add", null, AddSelection, ToolbarItemOrder.Primary));
+            var addButton = new Button
+            {
+                Text = "Add tags",
+                HorizontalOptions = LayoutOptions.Center
+            };
+            addButton.Clicked += (sender, e) =>
+            {
+                var entry = new Entry
+                {
+                    Placeholder = "Enter tag name here."
+                };
+
+                var button = new Button
+                {
+                    Text = "Add",
+                    HorizontalOptions = LayoutOptions.Center,
+                };
+                button.Clicked += (sender1, e1) =>
+                {
+                    var text = (sender as Entry)?.Text;
+                    var tag = new Tag(text);
+                    var ws = new WrappedSelection {Item = tag, IsSelected = false};
+                    _wrappedItems.Add(ws);
+                    Navigation.PopAsync();                  
+                };
+
+                var tagPage = new ContentPage
+                {
+                    Title = "Adding tag",
+                    Content = new StackLayout
+                    {
+                        Children =
+                        {
+                            entry,
+                            button
+                        }
+                    }
+                };
+                Navigation.PushAsync(tagPage);
+            };
+            Content = new StackLayout
+            {
+                Children =
+                {
+                    mainList,
+                    addButton
+                }
+            };                       
+
             ToolbarItems.Add(new ToolbarItem("All", null, SelectAll, ToolbarItemOrder.Primary));
             ToolbarItems.Add(new ToolbarItem("None", null, SelectNone, ToolbarItemOrder.Primary));
-        }
-
-        private void AddSelection()
-        {
-            // TODO Как-то по нажатию должны добавлять Tag в базу и на экран
-        }
+        }      
 
         private void SelectAll()
         {
@@ -98,7 +146,7 @@ namespace MusicTimer.Pages
             }
         }
 
-        public List<T> GetSelection()
+        public List<Tag> GetSelection()
         {
             return _wrappedItems.Where(item => item.IsSelected).Select(wrappedItem => wrappedItem.Item).ToList();
         }

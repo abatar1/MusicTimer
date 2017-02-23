@@ -1,4 +1,5 @@
-﻿using MusicTimer.Pages;
+﻿using MusicTimer.Domain.Files;
+using MusicTimer.Pages;
 using Xamarin.Forms;
 
 namespace MusicTimer
@@ -7,7 +8,9 @@ namespace MusicTimer
     {
         public App()
         {
-            MainPage = new NavigationPage(new LoadPage());
+            var storageController = new StorageController();
+            storageController.Load();
+            MainPage = new NavigationPage(new MainPage(storageController));
         }
 
         protected override void OnStart()

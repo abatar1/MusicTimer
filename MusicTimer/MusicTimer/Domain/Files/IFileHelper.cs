@@ -11,5 +11,7 @@ namespace MusicTimer.Domain.Files
         string LoadFile(string path);
         int CountFiles(string path, IEnumerable<string> formats);
         string DefaultMusicFolder();
+        string PersonalFolder();
+        List<string> GetDirectories(string path);
     }
 }
