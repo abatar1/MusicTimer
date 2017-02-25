@@ -41,10 +41,13 @@
     <Compile Include="Domain\Files\IFileHelper.cs" />
     <Compile Include="Domain\Settings\Settings.cs" />
     <Compile Include="Infrastructure\CustomPicker.cs" />
-    <Compile Include="Infrastructure\TagEventArgs.cs" />
+    <Compile Include="Infrastructure\GuiHelper.cs" />
+    <Compile Include="Infrastructure\WrappedItemSelectionTemplate.cs" />
+    <Compile Include="Infrastructure\WrappedSelection.cs" />
     <Compile Include="Pages\MainPage.cs" />
     <Compile Include="Domain\Models\Palletizer.cs" />
-    <Compile Include="Pages\SelectMultipleBasePage.cs" />
+    <Compile Include="Pages\SelectMulitpleTrackPage.cs" />
+    <Compile Include="Pages\SelectMultipleTagPage.cs" />
     <Compile Include="Pages\SettingsPage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Domain\Models\Tag.cs" />
